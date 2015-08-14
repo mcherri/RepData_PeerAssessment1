@@ -10,14 +10,16 @@ output:
 
 1. Load the libraries needed for this assessment.
 
-    ```{r echo = TRUE}
+    
+    ```r
     library(dplyr, warn.conflicts = FALSE)
     library(ggplot2)
     ```
 
 2. Unzip the data set, load it, and convert the columns to the needed types.
 
-    ```{r echo = TRUE}
+    
+    ```r
     unzip("activity.zip")
     raw.data <- read.csv("activity.csv",
                          colClasses=c("integer", "Date", "integer"))
@@ -28,7 +30,8 @@ output:
 1. Calculate the total number of steps taken per day and put the result in
    `total.steps.daily`. Note that missing values are filtered out.
 
-    ```{r echo = TRUE}
+    
+    ```r
     total.steps.daily <- raw.data %>%
         filter(!is.na(steps)) %>%
         group_by(date) %>%
@@ -38,20 +41,35 @@ output:
 2. Plot a histogram of the total number of steps taken each day. Note that
    the maximum happens in the range [10000, 10500) with 7 days count.
 
-    ```{r histogram_with_nas, echo = TRUE}
+    
+    ```r
     ggplot(data = total.steps.daily, aes(x = total.steps)) +
         geom_histogram(binwidth = 500, fill="#FF9999", color="black") +
         xlab("Total Steps") +
         ylab("Days Count") +
         ggtitle("Histogram of the Total Number of Steps Taken each Day")
     ```
+    
+    ![plot of chunk histogram_with_nas](figure/histogram_with_nas-1.png) 
 
 3. Calculate and report the mean and median of the total number of steps
    taken per day.
 
-    ```{r echo = TRUE}
+    
+    ```r
     mean(total.steps.daily$total.steps)
+    ```
+    
+    ```
+    ## [1] 10766.19
+    ```
+    
+    ```r
     median(total.steps.daily$total.steps)
+    ```
+    
+    ```
+    ## [1] 10765
     ```
 
 ## What is the average daily activity pattern?
@@ -59,7 +77,8 @@ output:
 1. Calculate average steps taken day for each 5-minute interval. Note that
    missing values are filtered out.
 
-    ```{r echo = TRUE}
+    
+    ```r
     average.daily <- raw.data %>%
         filter(!is.na(steps)) %>%
         group_by(interval) %>%
@@ -69,27 +88,40 @@ output:
 2. Plot the 5-minute interval (x-axis) versus the average number of steps taken
    across all days (y-axis).
 
-    ```{r plot_with_nas, echo = TRUE}
+    
+    ```r
     ggplot(data = average.daily, aes(x = interval, y = average.steps)) +
         geom_line(color="blue") +
         xlab("5-minute Interval") +
         ylab("Daily Average Steps") +
         ggtitle("Time Series Plot of Daily Average Steps")
     ```
+    
+    ![plot of chunk plot_with_nas](figure/plot_with_nas-1.png) 
 
 3. Calculate and report the 5-minute interval containing the maximum number of
    steps.
 
-    ```{r echo = TRUE}
+    
+    ```r
     average.daily$interval[which(average.daily$average.steps == max(average.daily$average.steps))]
+    ```
+    
+    ```
+    ## [1] 835
     ```
 
 ## Imputing missing values
 
 1. Calculate and report the total number of missing values in the dataset.
 
-    ```{r echo = TRUE}
+    
+    ```r
     sum(is.na(raw.data$steps))
+    ```
+    
+    ```
+    ## [1] 2304
     ```
 
 2. Fill in all of the missing values in the dataset. The strategy use is to
@@ -98,7 +130,8 @@ output:
    code assumes that `NA`'s exists for a whole day. It also verifies this in
    a verification step as explained below.
 
-    ```{r echo = TRUE}
+    
+    ```r
     # Define a function that will only imput NA's
     imput.steps <- function(x) {
         # Only imput NA's that exists for a whole day.
@@ -113,7 +146,8 @@ output:
 3. Create a new dataset that is equal to the original dataset but with the
    missing data filled in.
 
-    ```{r echo = TRUE}
+    
+    ```r
     imputed.data <- raw.data %>%
             group_by(date) %>%
             do(imput.steps(.)) %>% # Use the imput.step function defined above.
@@ -123,7 +157,8 @@ output:
    `print()` function should never be executed and there should be no output
    from the below block.
    
-    ```{r echo = TRUE}
+    
+    ```r
     if (any(is.na(imputed.data$steps))) {
         print("Something is wrong!") # Should never happen
     }
@@ -132,7 +167,8 @@ output:
 3. Calculate the total number of steps taken per day and put the result in
    `imputed.total.steps.daily`.
 
-    ```{r echo = TRUE}
+    
+    ```r
     imputed.total.steps.daily <- imputed.data %>%
         group_by(date) %>%
         summarise(total.steps = sum(steps))
@@ -143,14 +179,31 @@ output:
    that the maximum shifted to the range [10500, 11000) with more than 10 days
    count. Moreover, the mean was not affected but the median was.
 
-    ```{r imputed_histogram, echo = TRUE}
+    
+    ```r
     ggplot(data = imputed.total.steps.daily, aes(x = total.steps)) +
         geom_histogram(binwidth = 500, fill="#FF9999", color="black") +
         xlab("Total Steps") +
         ylab("Days Count") +
         ggtitle("Histogram of the Total Number of Steps Taken each Day")
+    ```
+    
+    ![plot of chunk imputed_histogram](figure/imputed_histogram-1.png) 
+    
+    ```r
     mean(imputed.total.steps.daily$total.steps)
+    ```
+    
+    ```
+    ## [1] 10766.19
+    ```
+    
+    ```r
     median(imputed.total.steps.daily$total.steps)
+    ```
+    
+    ```
+    ## [1] 10766.19
     ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -159,7 +212,8 @@ output:
    `"weekend"` indicating whether a given date is a weekday or weekend day.
    This code assumes that the week end happens on Saturdays and Sundays.
 
-    ```{r echo = TRUE}
+    
+    ```r
     as.weekdays <- function(x) {
         is.weekend <- weekdays(x, abbreviate = TRUE) %in% c("Sat", "Sun")
         factor(sapply(is.weekend, function(y) {
@@ -180,7 +234,8 @@ output:
    across all weekday days or weekend days (y-axis). Note how there is more
    activities on average during the weekend.
 
-    ```{r weekdays_imputed_plot, echo = TRUE}
+    
+    ```r
     ggplot(data = weekdays.data, aes(x = interval, y = average.steps)) +
         facet_grid(day.type ~ .) +
         geom_line(color="blue") +
@@ -188,3 +243,5 @@ output:
         ylab("Daily Average Steps") +
         ggtitle("Time Series Plot of Daily Average Steps")
     ```
+    
+    ![plot of chunk weekdays_imputed_plot](figure/weekdays_imputed_plot-1.png) 
