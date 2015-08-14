@@ -124,7 +124,7 @@ output:
     ## [1] 2304
     ```
 
-2. Fill in all of the missing values in the dataset. The strategy use is to
+2. Fill in all of the missing values in the dataset. The strategy used is to
    replace `NA`'s with the mean for that 5-minute interval averaged across all
    days. These are the same values calculated before in `average.daily`. The
    code assumes that `NA`'s exists for a whole day. It also verifies this in
